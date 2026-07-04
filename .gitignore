@@ -237,3 +237,6 @@ secrets.*
 # Generated outputs / reports
 *_report.txt
 /TextToCAD_Output/
+
+# JUnit output from the geometry CI job
+geo.xml
