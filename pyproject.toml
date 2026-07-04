@@ -12,7 +12,7 @@ keywords = ["cad", "cadquery", "opencascade", "llm", "parametric", "fabrication"
 # fully-resolved set lives in requirements.txt (see docs/BUILD_GUIDE.md). We keep
 # the pins here too so `pip install -e .` in a dev venv resolves the same versions.
 dependencies = [
-    "cadquery==2.4.0",
+    "cadquery==2.8.0",
     "cadquery-ocp==7.7.2",
     "pydantic==2.6.4",
     "ollama==0.3.3",

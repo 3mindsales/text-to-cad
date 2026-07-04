@@ -4,7 +4,7 @@
 # NOTE: cadquery + cadquery-ocp pull compiled OpenCASCADE binaries (600 MB+ expanded).
 # Confirmed: cadquery-ocp==7.7.2 ships cp311 win_amd64 wheels (OpenCASCADE 7.7).
 
-cadquery==2.4.0
+cadquery==2.8.0
 cadquery-ocp==7.7.2
 pydantic==2.6.4
 ollama==0.3.3
