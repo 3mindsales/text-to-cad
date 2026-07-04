@@ -9,6 +9,7 @@ Run with:  ``python -m texttocad.app``
 
 from __future__ import annotations
 
+import os
 import sys
 
 from texttocad import config
@@ -49,10 +50,43 @@ def main(argv: list[str] | None = None) -> int:
     from texttocad.ui.main_window import MainWindow
 
     qt_app = QApplication.instance() or QApplication(argv if argv is not None else sys.argv)
+
+    if not _startup_gates_pass(logger):
+        return 2
+
     backend = _build_backend(settings, hw)
     window = MainWindow(backend, settings, hw)
     window.show()
     return int(qt_app.exec())
+
+
+def _startup_gates_pass(logger) -> bool:
+    """Clock-rollback guard then license activation (SPEC 6/9). Order: clock -> license.
+
+    A documented dev bypass (``TEXTTOCAD_DEV_NO_LICENSE=1``) skips gating for local dev.
+    """
+    if os.environ.get("TEXTTOCAD_DEV_NO_LICENSE") == "1":
+        logger.warning("license gate bypassed via TEXTTOCAD_DEV_NO_LICENSE=1 (dev only)")
+        return True
+
+    from PySide6.QtWidgets import QDialog, QMessageBox
+
+    from texttocad import licensing
+    from texttocad.ui.activation import ActivationDialog
+
+    # 1) Clock-rollback guard (registry-only by default to respect the air-gap).
+    ok, reason = licensing.check_clock(licensing.RegistryStore())
+    if not ok:
+        QMessageBox.critical(None, "TextToCAD", reason)
+        return False
+
+    # 2) License activation modal.
+    def _verify(path: str) -> tuple[bool, str]:
+        result = licensing.verify_file(path)
+        return result.ok, result.reason
+
+    dialog = ActivationDialog(licensing.machine_hash(), _verify)
+    return bool(dialog.exec() == QDialog.DialogCode.Accepted)
 
 
 if __name__ == "__main__":
