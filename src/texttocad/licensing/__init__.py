@@ -1,0 +1,1 @@
+"""texttocad.licensing subpackage."""
