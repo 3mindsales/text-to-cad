@@ -1,0 +1,21 @@
+# Development + CI dependencies. Installs the full runtime plus tooling.
+-r requirements.txt
+
+# Lint / format / type-check
+ruff==0.14.4
+mypy==1.9.0
+
+# Test / coverage
+pytest==8.1.1
+coverage==7.14.3
+
+# Security scanning
+pip-audit==2.10.1
+bandit==1.7.8
+
+# Packaging / obfuscation (used by Phase 6)
+pyinstaller==6.5.0
+cython==3.0.10
+
+# Optional in-process LLM fallback (heavy native build; comment out if unavailable)
+# llama-cpp-python==0.3.2

@@ -216,3 +216,24 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---- TextToCAD project-specific ----
+# Bundled binaries and side-loaded model pack are delivered on media, never committed.
+/bin/*
+!/bin/.gitkeep
+/models/*
+!/models/.gitkeep
+
+# Licensing secrets: the PUBLIC key IS committed; private keys and issued licenses are not.
+*.key
+_vendor/
+private_key.pem
+
+# Local secrets / tokens (defensive)
+.ghtoken
+*.token
+secrets.*
+
+# Generated outputs / reports
+*_report.txt
+/TextToCAD_Output/

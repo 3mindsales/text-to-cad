@@ -1,0 +1,97 @@
+[project]
+name = "texttocad"
+version = "0.1.0"
+description = "Local, air-gapped text-to-CAD engine: natural-language part descriptions to validated parametric B-rep solids (CadQuery/OpenCASCADE)."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+license = { text = "Proprietary" }
+authors = [{ name = "3mindsales" }]
+keywords = ["cad", "cadquery", "opencascade", "llm", "parametric", "fabrication", "air-gapped"]
+
+# Runtime dependencies are the source of truth as EXACT pins. The compiled,
+# fully-resolved set lives in requirements.txt (see docs/BUILD_GUIDE.md). We keep
+# the pins here too so `pip install -e .` in a dev venv resolves the same versions.
+dependencies = [
+    "cadquery==2.4.0",
+    "cadquery-ocp==7.7.2",
+    "pydantic==2.6.4",
+    "ollama==0.3.3",
+    "PySide6==6.6.3.1",
+    "vtk==9.3.1",
+    "pyvista==0.43.10",
+    "pyvistaqt==0.11.1",
+    "ezdxf==1.1.4",
+    "trimesh==4.1.8",
+    "reportlab==4.1.0",
+    "numpy==1.26.4",
+    "cryptography==42.0.5",
+    "py-machineid==0.6.0",
+    "psutil==5.9.8",
+]
+
+[project.optional-dependencies]
+# Heavy / platform-specific runtimes kept optional so the core installs cleanly.
+llm-inproc = ["llama-cpp-python==0.3.2"]
+dev = [
+    "ruff==0.14.4",
+    "mypy==1.9.0",
+    "pytest==8.1.1",
+    "coverage==7.14.3",
+    "pip-audit==2.10.1",
+    "bandit==1.7.8",
+]
+packaging = ["pyinstaller==6.5.0", "cython==3.0.10"]
+
+[project.scripts]
+texttocad = "texttocad.app:main"
+
+[project.urls]
+Repository = "https://github.com/3mindsales/text-to-cad"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E741"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501", "B011"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+warn_unused_configs = true
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+files = ["src"]
+
+# PySide6 ships .pyi stubs that trip mypy's parser (known upstream issue); skip them.
+[[tool.mypy.overrides]]
+module = ["PySide6.*", "cadquery.*", "OCP.*", "vtk.*", "pyvista.*", "pyvistaqt.*", "trimesh.*", "ezdxf.*"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
+ignore_errors = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.run]
+source = ["texttocad"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
