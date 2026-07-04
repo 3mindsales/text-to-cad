@@ -1,8 +1,8 @@
 """Application entry point.
 
-Phase 1 scope (SPEC 1, 10): boot, load config, run the first-run hardware probe,
-and open a bare main window with an LLM status-pill placeholder. No features yet —
-the pipeline, viewer, and panels arrive in later phases behind their interfaces.
+Boots, loads config, runs the first-run hardware probe, constructs the configured
+(gated) LLM backend, and opens the main window (SPEC 1, 10). License activation is
+wired in Phase 7.
 
 Run with:  ``python -m texttocad.app``
 """
@@ -15,45 +15,18 @@ from texttocad import config
 from texttocad.logging_setup import setup_logging
 
 
-def _build_window(settings: config.Settings, hw: config.HardwareInfo):
-    """Construct the bare QMainWindow. Imported lazily so non-GUI paths (probe,
-    tests) don't require a Qt display."""
-    from PySide6.QtCore import Qt
-    from PySide6.QtWidgets import QLabel, QMainWindow, QStatusBar, QVBoxLayout, QWidget
+def _build_backend(settings: config.Settings, hw: config.HardwareInfo):
+    """Construct the gated backend; fall back to a local Ollama backend on refusal."""
+    from texttocad.llm import router
+    from texttocad.llm.base import ExternalProviderRefused
 
-    window = QMainWindow()
-    window.setWindowTitle(f"{config.APP_NAME} {config.APP_VERSION}")
-    window.resize(1200, 800)
+    try:
+        return router.build_backend(settings, hw)
+    except ExternalProviderRefused:
+        from texttocad.llm.ollama_backend import OllamaBackend
 
-    central = QWidget()
-    layout = QVBoxLayout(central)
-    layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-    heading = QLabel(f"{config.APP_NAME}")
-    heading.setStyleSheet("font-size: 28px; font-weight: 600; color: #000000;")
-    heading.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-    subtitle = QLabel("Describe a part and its dimensions — the model comes later.")
-    subtitle.setStyleSheet("color: #555555;")
-    subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-    layout.addWidget(heading)
-    layout.addWidget(subtitle)
-    window.setCentralWidget(central)
-
-    # LLM status pill placeholder (SPEC 10.2): green when local, red when external.
-    tier = config.MODEL_TIERS.get(settings.active_model_tier, {})
-    tag = tier.get("tag", settings.active_model_tier)
-    pill = QLabel(f"  ● {tag}  ")
-    # Phase 1: assume local (green). Real is_local() gating lands in Phase 2.
-    pill.setStyleSheet("color: #FFFFFF; background: #34A853; border-radius: 8px; padding: 2px 8px;")
-    status: QStatusBar = window.statusBar()
-    status.addPermanentWidget(pill)
-    status.showMessage(
-        f"RAM {hw.total_ram_gb} GB | GPU {'yes' if hw.has_nvidia_gpu else 'no'} | "
-        f"recommended tier: {hw.recommended_tier}"
-    )
-    return window
+        tier = router.resolve_tier(settings, hw)
+        return OllamaBackend(host=settings.ollama_host, model_tag=router.tier_tag(tier))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -70,17 +43,14 @@ def main(argv: list[str] | None = None) -> int:
         hw.has_nvidia_gpu,
         hw.recommended_tier,
     )
-    if settings.active_model_tier != hw.recommended_tier:
-        logger.info(
-            "Configured tier '%s' differs from recommended '%s' (keeping configured)",
-            settings.active_model_tier,
-            hw.recommended_tier,
-        )
 
     from PySide6.QtWidgets import QApplication
 
+    from texttocad.ui.main_window import MainWindow
+
     qt_app = QApplication.instance() or QApplication(argv if argv is not None else sys.argv)
-    window = _build_window(settings, hw)
+    backend = _build_backend(settings, hw)
+    window = MainWindow(backend, settings, hw)
     window.show()
     return int(qt_app.exec())
 

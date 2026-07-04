@@ -41,29 +41,31 @@ jobs:
           python -m coverage report
 
   geometry:
-    name: Geometry tests (CadQuery/OCC)
+    name: Geometry + UI tests (CadQuery/OCC/PySide6)
     runs-on: windows-latest
     env:
       PYTHONPATH: src
+      QT_QPA_PLATFORM: offscreen # UI smoke tests run headless (SPEC 6.1)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-      # Heavy native stack (cadquery + OpenCASCADE ~600 MB). Isolated in its own job so
-      # the fast unit-test lane above is not slowed by it.
-      - name: Install geometry stack
+      # Heavy native stack (cadquery + OpenCASCADE ~600 MB) plus PySide6 for UI smoke
+      # tests. Isolated so the fast unit-test lane above is not slowed. VTK/pyvistaqt are
+      # intentionally omitted so the viewer's software fallback (S9) is what runs.
+      - name: Install geometry + UI stack
         run: |
           python -m pip install --upgrade pip
-          pip install cadquery==2.4.0 cadquery-ocp==7.7.2 ezdxf==1.1.4 trimesh==4.1.8 reportlab==4.1.0 numpy==1.26.4 pydantic==2.6.4 pytest==8.1.1
+          pip install cadquery==2.4.0 cadquery-ocp==7.7.2 ezdxf==1.1.4 trimesh==4.1.8 reportlab==4.1.0 numpy==1.26.4 pydantic==2.6.4 pytest==8.1.1 PySide6==6.6.3.1
       # OpenCASCADE can segfault during interpreter shutdown on Windows AFTER the tests
       # pass, poisoning the process exit code. Judge pass/fail from the JUnit XML (written
       # at session finish, before the crash) instead of the exit code.
-      - name: Run geometry + sandbox-exec tests
+      - name: Run geometry + sandbox + pipeline + UI tests
         shell: bash
         run: |
-          pytest tests/geometry tests/sandbox tests/pipeline -q --junitxml=geo.xml || true
+          pytest tests/geometry tests/sandbox tests/pipeline tests/ui -q --junitxml=geo.xml || true
           python - <<'PY'
           import sys, xml.etree.ElementTree as ET
           root = ET.parse("geo.xml").getroot()
