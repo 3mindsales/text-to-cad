@@ -1,0 +1,18 @@
+# gitleaks configuration — extends the default ruleset and adds a small allowlist
+# for this repo's known-safe strings (test keypairs, doc examples).
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlist for TextToCAD"
+paths = [
+  # Vendor-side test keypair used only by the licensing test suite (Phase 7).
+  '''tests/.*key.*\.pem''',
+  '''tests/.*license.*\.key''',
+  # Docs may contain illustrative (non-secret) example tokens/keys.
+  '''docs/.*\.md''',
+]
+regexes = [
+  # The committed RSA PUBLIC key is not a secret.
+  '''-----BEGIN PUBLIC KEY-----''',
+]
