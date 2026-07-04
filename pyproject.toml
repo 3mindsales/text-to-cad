@@ -91,7 +91,21 @@ addopts = "-q"
 [tool.coverage.run]
 source = ["texttocad"]
 branch = true
+# GUI and not-yet-implemented modules are excluded from the coverage gate until the
+# phase that adds their tests. Each phase removes its module from this list as it
+# lands covered code (app/ui are driven by headless smoke tests, not unit coverage).
+omit = [
+    "*/__init__.py",
+    "*/app.py",
+    "*/ui/*",
+    "*/llm/*",
+    "*/geometry/*",
+    "*/pipeline/*",
+    "*/licensing/*",
+    "*/reporting/*",
+]
 
 [tool.coverage.report]
 show_missing = true
 skip_covered = false
+fail_under = 80
