@@ -199,9 +199,11 @@ def run_freeform(
     except subprocess.TimeoutExpired as exc:
         raise SandboxRejection(f"freeform code exceeded {timeout_s}s timeout") from exc
 
-    if proc.returncode != 0:
-        detail = (proc.stderr or proc.stdout or "").strip()[:500]
-        raise SandboxRejection(f"freeform execution failed (exit {proc.returncode}): {detail}")
-    if not out_path.exists() or out_path.stat().st_size == 0:
-        raise SandboxRejection("freeform produced no output solid")
-    return out_path
+    # A non-empty output means the export completed. OpenCASCADE can segfault during
+    # interpreter shutdown on Windows (exit 0xC0000005) AFTER writing the file, so a
+    # present, non-empty result is authoritative over the crash-prone exit code. A real
+    # error (bad code, missing `result`) leaves no output and is rejected below.
+    if out_path.exists() and out_path.stat().st_size > 0:
+        return out_path
+    detail = (proc.stderr or proc.stdout or "").strip()[:500]
+    raise SandboxRejection(f"freeform execution failed (exit {proc.returncode}): {detail}")

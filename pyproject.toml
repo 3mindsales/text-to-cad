@@ -102,9 +102,7 @@ omit = [
     # code path requires the heavy optional llama-cpp dependency to exercise.
     "*/llm/llamacpp_backend.py",
     "*/geometry/*",
-    "*/pipeline/*",
     "*/licensing/*",
-    "*/reporting/*",
 ]
 
 [tool.coverage.report]
