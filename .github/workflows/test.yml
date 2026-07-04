@@ -63,7 +63,7 @@ jobs:
       - name: Run geometry + sandbox-exec tests
         shell: bash
         run: |
-          pytest tests/geometry tests/sandbox -q --junitxml=geo.xml || true
+          pytest tests/geometry tests/sandbox tests/pipeline -q --junitxml=geo.xml || true
           python - <<'PY'
           import sys, xml.etree.ElementTree as ET
           root = ET.parse("geo.xml").getroot()
