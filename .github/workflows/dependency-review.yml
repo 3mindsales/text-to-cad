@@ -1,0 +1,40 @@
+name: Dependency
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    # Weekly audit so newly-disclosed CVEs in pinned deps surface even without a PR.
+    - cron: "23 3 * * 1"
+
+concurrency:
+  group: dependency-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    name: Dependency review (PR)
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependency review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  pip-audit:
+    name: pip-audit (pinned deps)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pip-audit==2.10.1
+      - name: Audit pinned runtime dependencies
+        run: pip-audit --strict -r requirements.txt
