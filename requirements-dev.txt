@@ -11,7 +11,7 @@ coverage==7.14.3
 
 # Security scanning
 pip-audit==2.10.1
-bandit==1.7.8
+bandit==1.9.4
 
 # Packaging / obfuscation (used by Phase 6)
 pyinstaller==6.5.0
