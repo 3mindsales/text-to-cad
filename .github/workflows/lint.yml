@@ -1,0 +1,43 @@
+name: Lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ruff:
+    name: Ruff (lint + format)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff==0.14.4
+      - name: ruff check (lint)
+        run: ruff check .
+      - name: ruff format (style)
+        run: ruff format --check .
+
+  mypy:
+    name: Mypy (type check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # Type-check the pure-Python core only. Heavy native deps (cadquery/OCP/vtk)
+      # and PySide6 are intentionally not installed here; pyproject marks them as
+      # ignored/skipped for mypy, so imports resolve as "missing" and are ignored.
+      - run: pip install mypy==1.9.0 pydantic==2.6.4
+      - name: mypy
+        run: mypy
