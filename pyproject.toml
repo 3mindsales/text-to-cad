@@ -103,7 +103,8 @@ omit = [
     # code path requires the heavy optional llama-cpp dependency to exercise.
     "*/llm/llamacpp_backend.py",
     "*/geometry/*",
-    "*/licensing/*",
+    # rollback.py's RegistryStore/ntp paths are Windows-registry / network only.
+    "*/licensing/rollback.py",
 ]
 
 [tool.coverage.report]

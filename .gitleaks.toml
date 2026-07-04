@@ -6,6 +6,8 @@ useDefault = true
 [allowlist]
 description = "Global allowlist for TextToCAD"
 paths = [
+  # The bundled RSA PUBLIC key is not a secret (the private key is gitignored).
+  '''src/texttocad/licensing/public_key\.pem''',
   # Vendor-side test keypair used only by the licensing test suite (Phase 7).
   '''tests/.*key.*\.pem''',
   '''tests/.*license.*\.key''',
