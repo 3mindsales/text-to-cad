@@ -98,7 +98,9 @@ omit = [
     "*/__init__.py",
     "*/app.py",
     "*/ui/*",
-    "*/llm/*",
+    # llm/* is covered from PR-8 onward, EXCEPT the in-process GGUF adapter, whose
+    # code path requires the heavy optional llama-cpp dependency to exercise.
+    "*/llm/llamacpp_backend.py",
     "*/geometry/*",
     "*/pipeline/*",
     "*/licensing/*",
