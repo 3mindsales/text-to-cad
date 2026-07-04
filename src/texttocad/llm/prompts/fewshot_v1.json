@@ -1,0 +1,92 @@
+[
+  {
+    "user": "steel L-bracket, 150 x 80 x 6 mm, four M8 holes, 8 mm inner fillet",
+    "assistant": {
+      "mode": "template",
+      "part_type": "L_BRACKET",
+      "parameters": {
+        "leg_a_length": 150,
+        "leg_b_length": 80,
+        "width": 80,
+        "thickness": 6,
+        "inner_fillet": 8,
+        "holes_a": {"dia": 9, "count": 2},
+        "holes_b": {"dia": 9, "count": 2}
+      }
+    }
+  },
+  {
+    "user": "flat plate 200 x 100 x 5 mm with a 4 by 2 grid of 6 mm holes, 25 mm pitch, 15 mm margin",
+    "assistant": {
+      "mode": "template",
+      "part_type": "FLAT_PLATE",
+      "parameters": {
+        "length": 200,
+        "width": 100,
+        "thickness": 5,
+        "hole_pattern": {"kind": "grid", "hole_dia": 6, "rows": 2, "cols": 4, "pitch_x": 25, "pitch_y": 25, "edge_margin": 15}
+      }
+    }
+  },
+  {
+    "user": "DN100 blind flange, 220 outer, 110 bore, 20 thick, 8 x 18 mm bolts on a 180 mm circle",
+    "assistant": {
+      "mode": "template",
+      "part_type": "FLANGE",
+      "parameters": {
+        "outer_dia": 220,
+        "inner_bore_dia": 110,
+        "thickness": 20,
+        "bolt_circle_dia": 180,
+        "bolt_count": 8,
+        "bolt_hole_dia": 18
+      }
+    }
+  },
+  {
+    "user": "open-top mild steel tank 400 x 300 x 250 mm, 3 mm walls, 20 mm drain",
+    "assistant": {
+      "mode": "template",
+      "part_type": "BOX_ENCLOSURE",
+      "parameters": {
+        "length": 400,
+        "width": 300,
+        "height": 250,
+        "wall_thickness": 3,
+        "open_top": true,
+        "drain_dia": 20
+      }
+    }
+  },
+  {
+    "user": "column base plate 250 square, 20 thick, 22 mm corner holes 40 mm from the edges, 60 mm central bore",
+    "assistant": {
+      "mode": "template",
+      "part_type": "BASE_PLATE",
+      "parameters": {
+        "length": 250,
+        "width": 250,
+        "thickness": 20,
+        "corner_hole_dia": 22,
+        "corner_edge_margin": 40,
+        "central_bore_dia": 60
+      }
+    }
+  },
+  {
+    "user": "triangular gusset, 120 x 120, 8 mm thick, curved hypotenuse radius 120, two 14 mm bolt holes",
+    "assistant": {
+      "mode": "template",
+      "part_type": "GUSSET",
+      "parameters": {
+        "edge_a": 120,
+        "edge_b": 120,
+        "thickness": 8,
+        "hypotenuse": "curved",
+        "radius": 120,
+        "hole_dia": 14,
+        "hole_count": 2
+      }
+    }
+  }
+]
