@@ -17,7 +17,9 @@ from __future__ import annotations
 import json
 import os
 import shutil
-import subprocess
+
+# subprocess is used only for a fixed-arg, no-shell nvidia-smi VRAM probe (see below).
+import subprocess  # nosec B404
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -177,7 +179,8 @@ def _probe_vram_gb() -> float | None:
     if not exe:
         return None
     try:
-        out = subprocess.run(
+        # exe is a resolved absolute path from shutil.which; static args; shell=False.
+        out = subprocess.run(  # nosec B603
             [exe, "--query-gpu=memory.total", "--format=csv,noheader,nounits"],
             capture_output=True,
             text=True,
