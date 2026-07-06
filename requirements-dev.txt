@@ -14,7 +14,7 @@ pip-audit==2.10.1
 bandit==1.7.8
 
 # Packaging / obfuscation (used by Phase 6)
-pyinstaller==6.5.0
+pyinstaller==6.21.0
 cython==3.0.10
 
 # Optional in-process LLM fallback (heavy native build; comment out if unavailable)

@@ -41,7 +41,7 @@ dev = [
     "pip-audit==2.10.1",
     "bandit==1.7.8",
 ]
-packaging = ["pyinstaller==6.5.0", "cython==3.0.10"]
+packaging = ["pyinstaller==6.21.0", "cython==3.0.10"]
 
 [project.scripts]
 texttocad = "texttocad.app:main"
